@@ -46,7 +46,7 @@ jobs:
           cd ios && pod install
       - name: Build app
         run: |       
-          xcodebuild -workspace AppCI.xcworkspace -scheme myapp archive -archivePath AppCI.xcarchive -allowProvisioningUpdates
+          xcodebuild -workspace AppCI.xcworkspace -scheme AppCI archive -archivePath AppCI.xcarchive -allowProvisioningUpdates
           xcodebuild -exportArchive -archivePath ./AppCI.xcarchive -exportPath . -exportOptionsPlist AppCI/Info.plist
           mv AppCI.ipa ../AppCI.ipa
       - name: Upload .ipa Artifact
