@@ -21,14 +21,36 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
-      - name: Install npm dependencies
+      - name: Install dependencies
         run: |
           yarn install
-      - name: Build Android Release
+      - name: Build Android Debug
         run: |
           yarn assemble 
-      - name: Upload Artifact
+      - name: Upload .apk Artifact
         uses: actions/upload-artifact@v1
         with:
           name: app-debug.apk
           path: android/app/build/outputs/apk/debug/
+
+  build-ios:
+    needs: install-and-test
+    runs-on: [self-hosted, macos]
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          yarn install
+      - name: Install pod dependencies
+        run: |
+          cd ios && pod install
+      - name: Build app
+        run: |       
+          xcodebuild -workspace AppCI.xcworkspace -scheme myapp archive -archivePath AppCI.xcarchive -allowProvisioningUpdates
+          xcodebuild -exportArchive -archivePath ./AppCI.xcarchive -exportPath . -exportOptionsPlist AppCI/Info.plist
+          mv AppCI.ipa ../AppCI.ipa
+      - name: Upload .ipa Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: AppCI.ipa
+          path: ios/build/
